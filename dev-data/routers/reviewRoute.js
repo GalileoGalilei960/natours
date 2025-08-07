@@ -5,7 +5,7 @@ const reviewController = require(`./../controllers/reviewController`);
 
 const router = express.Router({ mergeParams: true });
 
-router.use(authController.protect);
+// router.use(authController.protect);
 
 router
     .route('/')

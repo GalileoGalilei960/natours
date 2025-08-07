@@ -1,5 +1,6 @@
 config.env
 node_modules
+*.jpg
 C:\Users\halad\Desktop\complete-node-bootcamp-master\4-natours\starter\.cache
 .cache/00/04d9d6bf0d7557de50eb17532901a8.json
 .cache/01/24144ad66e6fd0c8a3997a78371bc0.json

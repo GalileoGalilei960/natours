@@ -4,6 +4,7 @@ const catchAsync = require(`../utils/catchAsync`);
 const handleFactory = require(`./handleFactory`);
 const Tour = require('../../models/tourModel');
 const Booking = require('../../models/bookingModel');
+const User = require('../../models/userModel');
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     //get tour info
@@ -12,7 +13,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
-        success_url: `${req.protocol}://${req.get('host')}/?tour=${req.params.id}&user=${req.user.id}&price=${tour.price}`,
+        success_url: `${req.protocol}://${req.get('host')}/my-tours`,
         cancel_url: `${req.protocol}://${req.get('host')}/tours/${tour.slug}`,
         customer_email: req.user.email,
         client_reference_id: req.params.id,
@@ -43,18 +44,46 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.createBookingCheckout = async (req, res, next) => {
-    const { price, tour, user } = req.query;
+// exports.createBookingCheckout = async (req, res, next) => {
+//     const { price, tour, user } = req.query;
 
-    if (!price || !tour || !user) return next();
+//     if (!price || !tour || !user) return next();
 
+//     await Booking.create({ price, tour, user });
+
+//     res.redirect(req.originalUrl.split('?')[0]);
+// };
+const createBookingCheckout = catchAsync(async (session) => {
+    const tour = session.client_reference_id;
+    const { _id: user } = await User.findOne({ email: session.customer_email });
+    // console.log(session.customer_email, user);
+    const price = session.amount_total / 100;
     await Booking.create({ price, tour, user });
-
-    res.redirect(req.originalUrl.split('?')[0]);
-};
+});
 
 exports.getAllBookings = handleFactory.getAll(Booking);
 exports.getBookingById = handleFactory.getOne(Booking, 'user tour');
 exports.createBooking = handleFactory.createOne(Booking);
 exports.updateBooking = handleFactory.patchOne(Booking);
 exports.deleteBooking = handleFactory.deleteOne(Booking);
+exports.checkoutWebhook = catchAsync(async (req, res, next) => {
+    const signature = req.headers['stripe-signature'];
+
+    // console.log('ффффффффф');
+
+    let event;
+    try {
+        event = stripe.webhooks.constructEvent(
+            req.body,
+            signature,
+            process.env.STRIPE_WEBHOOK_SECRET,
+        );
+    } catch (err) {
+        return res.status(400).send(`Webhook error: ${err.message}`);
+    }
+
+    if (event.type === 'checkout.session.completed')
+        createBookingCheckout(event.data.object);
+
+    res.status(200).json({ received: true });
+});

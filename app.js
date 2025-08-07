@@ -7,6 +7,7 @@ const hpp = require('hpp');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors');
 
 const AppError = require(`./dev-data/utils/appError.js`);
 const errorController = require(`./dev-data/controllers/errorController.js`);
@@ -15,6 +16,9 @@ const userRouter = require(`./dev-data/routers/userRoute.js`);
 const reviewRouter = require(`./dev-data/routers/reviewRoute.js`);
 const bookingRouter = require(`./dev-data/routers/bookingRoute.js`);
 const viewRouter = require(`./dev-data/routers/viewRoute.js`);
+const bookingController = require(
+    `./dev-data/controllers/bookingController.js`,
+);
 
 const limiter = rateLimit({
     max: 1000,
@@ -29,6 +33,9 @@ app.set('views', path.join(__dirname, 'views'));
 
 // set security http headers
 // const helmet = require('helmet');
+
+app.use(cors());
+app.options('*', cors());
 
 app.use(
     helmet({
@@ -68,12 +75,31 @@ app.use(
 // set limit af requests from ip
 app.use(limiter);
 
+app.set('trust proxy', 'loopback'); // важливо для ngrok/heroku
+
+app.all('*', (req, res, next) => {
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    console.log('Client IP:', ip, new Date(Date.now()).toISOString());
+    // res.send('Your IP is: ' + ip);
+    next();
+});
+
+app.use(
+    '/checkout-webhook',
+    express.raw({ type: 'application/json' }),
+    bookingController.checkoutWebhook,
+);
+
 // use deep body parser for jsons
 app.set('query parser', 'extended');
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
 
+// app.all('*', (req, res, next) => {
+//     console.log(req.body);
+//     next();
+// });
 //sanitizing data against noSQL injections
 app.use(mongoSanitize());
 

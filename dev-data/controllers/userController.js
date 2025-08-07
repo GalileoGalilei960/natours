@@ -36,7 +36,7 @@ exports.uploadUserPhoto = upload.single('photo');
 exports.resizeUserPhoto = async (req, res, next) => {
     if (!req.file) return next();
 
-    req.file.filename = `user-${req.user ? req.user._id : Math.random()}.jpg`;
+    req.file.filename = req.user ? req.user.photo : `user-${Math.random()}.jpg`;
 
     await sharp(req.file.buffer)
         .resize(500, 500)

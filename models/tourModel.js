@@ -62,7 +62,7 @@ const tourSchema = new mongoose.Schema(
         },
         imageCover: {
             type: String,
-            required: [true, 'A tour must have a cover image'],
+            // required: [true, 'A tour must have a cover image'],
         },
         images: [String],
         createdAt: {
@@ -139,6 +139,7 @@ tourSchema.pre(/^find/, function (next) {
             $ne: true,
         },
     }).populate({ path: 'guides', select: '-__v -changedPassword' });
+    // .select(['name', '_id']);
     // .populate('reviews');
 
     this._timeStamp = Date.now();
