@@ -24,29 +24,27 @@ if (process.argv[2] === '--import') {
             fs.readFileSync('./dev-data/data/reviews.json', 'utf-8'),
         );
 
-        await mongoose
-            .connect(DB, {})
-            .then(() => console.log('DataBase is running'));
+        await mongoose.connect(DB, {});
+        // .then(() => console.log('DataBase is running'));
 
         await Tour.create(tours);
         await User.create(users, { validateBeforeSave: false });
         await Review.create(reviews, { validateBeforeSave: false });
 
         await mongoose.disconnect();
-        console.log('All data successfully written to the DB');
+        // console.log('All data successfully written to the DB');
     })();
 } else if (process.argv[2] === '--delete') {
     (async function () {
-        await mongoose
-            .connect(DB, {})
-            .then(() => console.log('DataBase is running'));
+        await mongoose.connect(DB, {});
+        // .then(() => console.log('DataBase is running'));
 
         await Tour.deleteMany();
         await User.deleteMany();
         await Review.deleteMany();
 
         await mongoose.disconnect();
-        console.log('All data successfully deleted');
+        // console.log('All data successfully deleted');
         // process.abort();
     })();
-} else console.log('Wrong arguments');
+} //else //console.log('Wrong arguments');

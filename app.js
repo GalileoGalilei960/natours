@@ -6,6 +6,7 @@ const XSS = require('xss-clean');
 const hpp = require('hpp');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const AppError = require(`./dev-data/utils/appError.js`);
 const errorController = require(`./dev-data/controllers/errorController.js`);
@@ -92,6 +93,8 @@ app.use(
         ],
     }),
 );
+
+app.use(compression());
 
 // serve static files
 app.use(express.static(path.join(__dirname, 'public')));

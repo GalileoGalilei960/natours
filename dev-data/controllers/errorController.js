@@ -9,7 +9,7 @@ const sendDevError = (err, req, res) => {
             stack: err.stack,
         });
     } else {
-        console.log(err);
+        // console.log(err);
         res.status(err.statusCode).render('error', {
             title: 'Something went wrong',
             msg: err.message,
