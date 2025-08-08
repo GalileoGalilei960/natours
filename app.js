@@ -77,7 +77,7 @@ app.use(limiter);
 
 app.set('trust proxy', 'loopback'); // важливо для ngrok/heroku
 
-app.all('*', (req, res, next) => {
+app.all('/', (req, res, next) => {
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     console.log('Client IP:', ip, new Date(Date.now()).toISOString());
     // res.send('Your IP is: ' + ip);
