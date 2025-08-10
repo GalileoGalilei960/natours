@@ -52,3 +52,9 @@ exports.alerts = (req, res, next) => {
             "Your booking was successful! Please check your email for a confirmation. If your booking doesn't show up here immediatly, please come back later.";
     next();
 };
+
+exports.signUp = (req, res, next) => {
+    res.status(200).sendFile('signup.html', {
+        root: `${__dirname}/../../public/`,
+    });
+};

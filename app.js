@@ -59,7 +59,12 @@ app.use(
                     'https://fonts.googleapis.com',
                 ],
                 fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-                imgSrc: ["'self'", 'data:', 'https://api.mapbox.com'],
+                imgSrc: [
+                    "'self'",
+                    'data:',
+                    'https://api.mapbox.com',
+                    'https://images.unsplash.com',
+                ],
                 connectSrc: [
                     "'self'",
                     'https://api.mapbox.com',
@@ -97,7 +102,7 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
 
 // app.all('*', (req, res, next) => {
-//     console.log(req.body);
+//     console.log(req.url);
 //     next();
 // });
 //sanitizing data against noSQL injections

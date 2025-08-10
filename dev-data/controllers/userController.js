@@ -34,7 +34,10 @@ const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 exports.uploadUserPhoto = upload.single('photo');
 
 exports.resizeUserPhoto = async (req, res, next) => {
+    // console.log('test1');
+    // console.log(req);
     if (!req.file) return next();
+    // console.log('test2');
 
     req.file.filename =
         req.user && req.user.photo !== 'default.jpg'
