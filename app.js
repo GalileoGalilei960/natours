@@ -32,7 +32,6 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // set security http headers
-// const helmet = require('helmet');
 
 app.use(cors());
 app.options('*', cors());
@@ -49,8 +48,8 @@ app.use(
                     'https://js.stripe.com',
                     'blob:',
                 ],
-                frameSrc: ['https://js.stripe.com'], // ✅ Дозволяє Stripe фрейми
-                frameAncestors: ["'self'"], // ✅ Хто може вбудовувати твої сторінки
+                frameSrc: ['https://js.stripe.com'],
+                frameAncestors: ["'self'"],
                 workerSrc: ["'self'", 'blob:'],
                 styleSrc: [
                     "'self'",
@@ -80,15 +79,6 @@ app.use(
 // set limit af requests from ip
 app.use(limiter);
 
-app.set('trust proxy', 'loopback'); // важливо для ngrok/heroku
-
-app.all('/', (req, res, next) => {
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    console.log('Client IP:', ip, new Date(Date.now()).toISOString());
-    // res.send('Your IP is: ' + ip);
-    next();
-});
-
 app.use(
     '/checkout-webhook',
     express.raw({ type: 'application/json' }),
@@ -101,10 +91,6 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
 
-// app.all('*', (req, res, next) => {
-//     console.log(req.url);
-//     next();
-// });
 //sanitizing data against noSQL injections
 app.use(mongoSanitize());
 
@@ -148,5 +134,3 @@ app.all(/.*/, (req, res, next) => {
 app.use(errorController);
 
 module.exports = app;
-
-// my first commit
